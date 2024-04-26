@@ -1,0 +1,17 @@
+{
+  "name": "billy-billboard",
+  "version": "1.0.0",
+  "description": "Project to display movies billboard consuming a restAPI from themoviedb",
+  "main": "index.html",
+  "scripts": {
+    "test": "test"
+  },
+  "keywords": [
+    "HTML",
+    "CSS",
+    "JavaScript",
+    "restAPI"
+  ],
+  "author": "EduardoGarcia",
+  "license": "MIT"
+}
