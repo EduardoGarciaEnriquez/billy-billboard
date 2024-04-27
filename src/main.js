@@ -131,7 +131,7 @@ async function getRelatedMovies(id) {
 
 //append movie item
 function appendMovieItem({ item, container, lazyLoading = false }) {
-  const { title, poster_path: src, id } = item;
+  const { title, poster_path: src, id, overview } = item;
 
   const movieItemContainer = document.createElement("div");
   const image = document.createElement("img");
@@ -144,9 +144,20 @@ function appendMovieItem({ item, container, lazyLoading = false }) {
     lazyLoading ? "data-img" : "src",
     "https://image.tmdb.org/t/p/w300" + src
   );
+  movieItemContainer.style.height = "100%";
 
   movieItemContainer.appendChild(image);
   container.appendChild(movieItemContainer);
+
+  image.addEventListener("error", () => {
+    const textImage = document.createElement("div");
+    textImage.classList.add("movie-img");
+    textImage.classList.add("image-text");
+    textImage.innerHTML = `<h2 class='image-text--title'>${title}</h2>`;
+
+    textImage.innerHTML += `<small class='image-text--overview'>${overview}</small>`;
+    movieItemContainer.replaceChild(textImage, image);
+  });
 
   movieItemContainer.addEventListener("click", (e) => {
     e.preventDefault();
@@ -183,7 +194,7 @@ function appendGenreItem(item, genresListContainer) {
 //utils
 const LazyLoader = new IntersectionObserver((entries) => {
   entries.forEach((entry) => {
-    if(entry.isIntersecting){
+    if (entry.isIntersecting) {
       const url = entry.target.getAttribute("data-img");
       entry.target.setAttribute("src", url);
     }

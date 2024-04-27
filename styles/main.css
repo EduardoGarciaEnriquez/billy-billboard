@@ -195,7 +195,7 @@ footer {
 .category-container {
   width: 45%;
 }
-.container--loading{
+.container--loading {
   animation: loading 3s infinite linear;
   background: linear-gradient(to right, #eee 8%, #ddd 18%, #eee 33%);
 }
@@ -208,7 +208,24 @@ footer {
     background-position: calc(100% + 200px);
   }
 }
+.image-text {
+  background-color: black;
+  aspect-ratio: 2/3;
+  text-align: center;
+  display: grid;
+  align-content: center;
+}
 
+.image-text .image-text--title {
+  color: whitesmoke;
+}
+.image-text .image-text--overview {
+  color: lightgray;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  
+}
 .category-title {
   margin-bottom: 8px;
   cursor: pointer;
@@ -351,6 +368,10 @@ footer {
   height: 187.5px;
   min-height: 187.5px;
   max-height: 187.5px;
+}
+.relatedMovies-scrollContainer .image-text{
+  background: pink;
+  padding-top: -30px;
 }
 footer {
   background-color: var(--purple-medium-3);
