@@ -18,7 +18,11 @@ async function getTrendingMoviesPreview() {
   moviesListContainer.innerHTML = "";
 
   moviesList.forEach((item) => {
-    appendMovieItem(item, moviesListContainer);
+    appendMovieItem({
+      item,
+      container: moviesListContainer,
+      lazyLoading: true,
+    });
   });
 }
 
@@ -50,7 +54,7 @@ async function getMoviesByGenre({ id, name }) {
   genericSection.innerHTML = "";
 
   moviesList.forEach((item) => {
-    appendMovieItem(item, genericSection);
+    appendMovieItem({ item, container: genericSection });
   });
 }
 
@@ -68,7 +72,7 @@ async function getMoviesBySearch(search) {
   genericSection.innerHTML = "";
 
   moviesList.forEach((item) => {
-    appendMovieItem(item, genericSection);
+    appendMovieItem({ item, container: genericSection });
   });
 }
 
@@ -83,7 +87,7 @@ async function getTrendingMovies() {
   genericSection.innerHTML = "";
 
   moviesList.forEach((item) => {
-    appendMovieItem(item, genericSection);
+    appendMovieItem({ item, container: genericSection });
   });
 }
 
@@ -101,8 +105,8 @@ async function getMovieDetail(id) {
     rgba(0, 0, 0, 0.35) 19.27%,
     rgba(0, 0, 0, 0) 29.17%
   ),
-  url("https://image.tmdb.org//t/p/w500${poster_path}")`
-  
+  url("https://image.tmdb.org//t/p/w500${poster_path}")`;
+
   movieDetailCategoriesList.innerHTML = "";
 
   genres.forEach((item) => {
@@ -121,12 +125,12 @@ async function getRelatedMovies(id) {
   relatedMoviesContainer.innerHTML = "";
 
   relatedMovies.forEach((item) => {
-    appendMovieItem(item, relatedMoviesContainer);
+    appendMovieItem({ item, container: relatedMoviesContainer });
   });
 }
 
 //append movie item
-function appendMovieItem(item, moviesListContainer) {
+function appendMovieItem({ item, container, lazyLoading = false }) {
   const { title, poster_path: src, id } = item;
 
   const movieItemContainer = document.createElement("div");
@@ -136,15 +140,22 @@ function appendMovieItem(item, moviesListContainer) {
 
   image.classList.add("movie-img");
   image.setAttribute("alt", title);
-  image.setAttribute("src", "https://image.tmdb.org/t/p/w300" + src);
+  image.setAttribute(
+    lazyLoading ? "data-img" : "src",
+    "https://image.tmdb.org/t/p/w300" + src
+  );
 
   movieItemContainer.appendChild(image);
-  moviesListContainer.appendChild(movieItemContainer);
+  container.appendChild(movieItemContainer);
 
   movieItemContainer.addEventListener("click", (e) => {
     e.preventDefault();
     location.hash = `movie=${title}-${id}`;
   });
+
+  if (lazyLoading) {
+    LazyLoader.observe(image);
+  }
 }
 
 //append genre item
@@ -168,3 +179,13 @@ function appendGenreItem(item, genresListContainer) {
     location.hash = `genre=${name}-${id}`;
   });
 }
+
+//utils
+const LazyLoader = new IntersectionObserver((entries) => {
+  entries.forEach((entry) => {
+    if(entry.isIntersecting){
+      const url = entry.target.getAttribute("data-img");
+      entry.target.setAttribute("src", url);
+    }
+  });
+});
