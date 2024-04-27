@@ -195,6 +195,20 @@ footer {
 .category-container {
   width: 45%;
 }
+.container--loading{
+  animation: loading 3s infinite linear;
+  background: linear-gradient(to right, #eee 8%, #ddd 18%, #eee 33%);
+}
+
+@keyframes loading {
+  0% {
+    background-position: -200px;
+  }
+  100% {
+    background-position: calc(100% + 200px);
+  }
+}
+
 .category-title {
   margin-bottom: 8px;
   cursor: pointer;

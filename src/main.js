@@ -102,6 +102,7 @@ async function getMovieDetail(id) {
     rgba(0, 0, 0, 0) 29.17%
   ),
   url("https://image.tmdb.org//t/p/w500${poster_path}")`
+  
   movieDetailCategoriesList.innerHTML = "";
 
   genres.forEach((item) => {
