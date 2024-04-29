@@ -5,6 +5,8 @@ const api = axios.create({
 
 const url = "https://api.themoviedb.org/3/";
 
+let page = 1;
+
 //get trending movies list
 async function getTrendingMoviesPreview() {
   const { data } = await api(url + "trending/movie/day");
@@ -26,6 +28,17 @@ async function getTrendingMoviesPreview() {
   });
 }
 
+//function selector
+function callSelector() {
+  if (location.hash.startsWith("#search")) {
+    getMoviesBySearch();
+  } else if (location.hash.startsWith("#genre")) {
+    getMoviesByGenre();
+  } else if (location.hash.startsWith("#trending")) {
+    getTrendingMovies();
+  }
+}
+
 //get genres list
 async function getCategoriesPreview() {
   const { data } = await api(url + "genre/movie/list");
@@ -44,14 +57,20 @@ async function getCategoriesPreview() {
 }
 
 //get movies by genre list
-async function getMoviesByGenre({ id, name }) {
-  const { data } = await api(url + "discover/movie?with_genres=" + id);
+async function getMoviesByGenre() {
+  let genre = location.hash.split("=")[1];
+  let [name, id] = genre.split("-");
+  const { data } = await api(
+    `${url}discover/movie?with_genres=${id}&page=${page}`
+  );
 
   const moviesList = data.results;
 
   headerCategoryTitle.innerHTML = name.replace(/%20/g, " ");
 
-  genericSection.innerHTML = "";
+  if (page === 1) {
+    genericSection.innerHTML = "";
+  }
 
   moviesList.forEach((item) => {
     appendMovieItem({ item, container: genericSection });
@@ -59,8 +78,9 @@ async function getMoviesByGenre({ id, name }) {
 }
 
 //get movies by search result
-async function getMoviesBySearch(search) {
-  const { data } = await api(url + "search/movie?query=" + search);
+async function getMoviesBySearch() {
+  let query = location.hash.split("=")[1];
+  const { data } = await api(`${url}search/movie?query=${query}$page=${page}`);
 
   const moviesList = data.results;
 
@@ -69,7 +89,9 @@ async function getMoviesBySearch(search) {
     " "
   )}"`;
 
-  genericSection.innerHTML = "";
+  if (page === 1) {
+    genericSection.innerHTML = "";
+  }
 
   moviesList.forEach((item) => {
     appendMovieItem({ item, container: genericSection });
@@ -78,17 +100,28 @@ async function getMoviesBySearch(search) {
 
 //get movies by search result
 async function getTrendingMovies() {
-  const { data } = await api(url + "trending/movie/day");
+  const { data } = await api(`${url}trending/movie/day?page=${page}`);
 
   const moviesList = data.results;
 
   headerCategoryTitle.innerHTML = "Trending movies";
 
-  genericSection.innerHTML = "";
+  if (page === 1) {
+    genericSection.innerHTML = "";
+  }
 
   moviesList.forEach((item) => {
     appendMovieItem({ item, container: genericSection });
   });
+}
+
+//get more
+function infiniteScroll() {
+  const { scrollTop, clientHeight, scrollHeight } = document.documentElement;
+  if (scrollTop + clientHeight >= scrollHeight) {
+    page++;
+    callSelector();
+  }
 }
 
 //get movies by search result

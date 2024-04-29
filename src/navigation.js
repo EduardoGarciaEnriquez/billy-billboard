@@ -19,8 +19,11 @@ trendingBtn.addEventListener("click", (e) => {
   location.hash = "trending";
 });
 
+window.addEventListener("scroll", () => infiniteScroll(), { passive: false });
+
 function navigator() {
   window.scrollTo(0, 0);
+  page = 1;
   if (location.hash.startsWith("#search")) {
     searchPage();
   } else if (location.hash.startsWith("#movie")) {
@@ -64,7 +67,6 @@ function searchPage() {
   genericSection.classList.remove("inactive");
   movieDetailSection.classList.add("inactive");
 
-  let search = location.hash.split("=")[1];
   getMoviesBySearch(search);
 }
 
@@ -98,9 +100,7 @@ function genrePage() {
   genericSection.classList.remove("inactive");
   movieDetailSection.classList.add("inactive");
 
-  let genre = location.hash.split("=")[1];
-  let [name, id] = genre.split("-");
-  getMoviesByGenre({ name, id });
+  getMoviesByGenre();
 }
 
 function trendingPage() {
@@ -116,5 +116,5 @@ function trendingPage() {
   genericSection.classList.remove("inactive");
   movieDetailSection.classList.add("inactive");
 
-  getTrendingMovies()
+  getTrendingMovies();
 }
