@@ -3,6 +3,7 @@ const $ = (id) => document.querySelector(id);
 const headerSection = $("#header");
 const trendingPreviewSection = $("#trendingPreview");
 const categoriesPreviewSection = $("#categoriesPreview");
+const likedMoviesList = $('#likedMovies .liked-movieList')
 const genericSection = $("#genericList");
 const movieDetailSection = $("#movieDetail");
 const searchForm = $("#searchForm");

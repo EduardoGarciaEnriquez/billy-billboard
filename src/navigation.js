@@ -40,6 +40,7 @@ function navigator() {
 function home() {
   getTrendingMoviesPreview();
   getCategoriesPreview();
+  getLikedMovies();
 
   headerSection.style.background = "";
   headerSection.classList.remove("header-container--long");

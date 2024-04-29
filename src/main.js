@@ -29,6 +29,25 @@ async function getTrendingMoviesPreview() {
   });
 }
 
+//get trending movies list
+function getLikedMovies() {
+  const likedMovies = localStorage.getItem("likedMovies") ?? undefined;
+
+  // console.log(likedMovies)
+  // if (likedMovies && likedMovies?.length !== 0) {
+
+  //   likedMoviesList.innerHTML = "";
+
+  //   likedMovies.forEach((item) => {
+  //     appendMovieItem({
+  //       item,
+  //       container: moviesListContainer,
+  //       lazyLoading: true,
+  //     });
+  //   });
+  // }
+}
+
 //function selector
 function callSelector() {
   if (location.hash.startsWith("#search")) {
@@ -85,7 +104,7 @@ async function getMoviesBySearch() {
   const { data } = await api(`${url}search/movie?query=${query}$page=${page}`);
 
   const moviesList = data.results;
-  total_pages = data?.total_pages
+  total_pages = data?.total_pages;
 
   headerCategoryTitle.innerHTML = `results for "${search.replace(
     /%20/g,
@@ -172,7 +191,7 @@ function appendMovieItem({ item, container, lazyLoading = false }) {
 
   const movieItemContainer = document.createElement("div");
   const image = document.createElement("img");
-  const likeBtn = document.createElement('button');
+  const likeBtn = document.createElement("button");
 
   movieItemContainer.classList.add("movie-container");
 
@@ -184,10 +203,16 @@ function appendMovieItem({ item, container, lazyLoading = false }) {
   );
   movieItemContainer.style.height = "100%";
 
-  likeBtn.classList.add('like-button')
+  likeBtn.classList.add("like-button");
+
+  const likedMovies = localStorage.getItem("likedMovies");
+
+  if (likedMovies?.includes(id)) {
+    likeBtn.classList.add("like-button--liked");
+  }
 
   movieItemContainer.appendChild(image);
-  movieItemContainer.appendChild(likeBtn)
+  movieItemContainer.appendChild(likeBtn);
   container.appendChild(movieItemContainer);
 
   image.addEventListener("error", () => {
@@ -205,9 +230,30 @@ function appendMovieItem({ item, container, lazyLoading = false }) {
     location.hash = `movie=${title}-${id}`;
   });
 
-  likeBtn.addEventListener('click', () => {
-    likeBtn.classList.toggle('like-button--liked')
-  })
+  likeBtn.addEventListener("click", () => {
+    likeBtn.classList.toggle("like-button--liked");
+
+    if (!likedMovies) {
+      localStorage.setItem("likedMovies", JSON.stringify([item]));
+    } else {
+      let parsedLikedMovies = JSON.parse(likedMovies);
+      let index = parsedLikedMovies.findIndex((movie) => movie.id === id);
+
+      if (index === -1) {
+        localStorage.setItem(
+          "likedMovies",
+          JSON.stringify([...parsedLikedMovies, item])
+        );
+      } else {
+        localStorage.setItem(
+          "likedMovies",
+          JSON.stringify(
+            parsedLikedMovies.filter((likedMovie) => likedMovie.id !== id)
+          )
+        );
+      }
+    }
+  });
 
   if (lazyLoading) {
     LazyLoader.observe(image);
