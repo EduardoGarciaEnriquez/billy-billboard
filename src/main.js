@@ -6,6 +6,7 @@ const api = axios.create({
 const url = "https://api.themoviedb.org/3/";
 
 let page = 1;
+let total_pages;
 
 //get trending movies list
 async function getTrendingMoviesPreview() {
@@ -65,6 +66,7 @@ async function getMoviesByGenre() {
   );
 
   const moviesList = data.results;
+  total_pages = data?.total_pages;
 
   headerCategoryTitle.innerHTML = name.replace(/%20/g, " ");
 
@@ -83,6 +85,7 @@ async function getMoviesBySearch() {
   const { data } = await api(`${url}search/movie?query=${query}$page=${page}`);
 
   const moviesList = data.results;
+  total_pages = data?.total_pages
 
   headerCategoryTitle.innerHTML = `results for "${search.replace(
     /%20/g,
@@ -102,7 +105,8 @@ async function getMoviesBySearch() {
 async function getTrendingMovies() {
   const { data } = await api(`${url}trending/movie/day?page=${page}`);
 
-  const moviesList = data.results;
+  const moviesList = data?.results;
+  total_pages = data?.total_pages;
 
   headerCategoryTitle.innerHTML = "Trending movies";
 
@@ -118,7 +122,7 @@ async function getTrendingMovies() {
 //get more
 function infiniteScroll() {
   const { scrollTop, clientHeight, scrollHeight } = document.documentElement;
-  if (scrollTop + clientHeight >= scrollHeight) {
+  if (scrollTop + clientHeight >= scrollHeight && page < total_pages) {
     page++;
     callSelector();
   }
@@ -168,6 +172,7 @@ function appendMovieItem({ item, container, lazyLoading = false }) {
 
   const movieItemContainer = document.createElement("div");
   const image = document.createElement("img");
+  const likeBtn = document.createElement('button');
 
   movieItemContainer.classList.add("movie-container");
 
@@ -179,7 +184,10 @@ function appendMovieItem({ item, container, lazyLoading = false }) {
   );
   movieItemContainer.style.height = "100%";
 
+  likeBtn.classList.add('like-button')
+
   movieItemContainer.appendChild(image);
+  movieItemContainer.appendChild(likeBtn)
   container.appendChild(movieItemContainer);
 
   image.addEventListener("error", () => {
@@ -192,10 +200,14 @@ function appendMovieItem({ item, container, lazyLoading = false }) {
     movieItemContainer.replaceChild(textImage, image);
   });
 
-  movieItemContainer.addEventListener("click", (e) => {
+  image.addEventListener("click", (e) => {
     e.preventDefault();
     location.hash = `movie=${title}-${id}`;
   });
+
+  likeBtn.addEventListener('click', () => {
+    likeBtn.classList.toggle('like-button--liked')
+  })
 
   if (lazyLoading) {
     LazyLoader.observe(image);
