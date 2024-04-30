@@ -30,22 +30,25 @@ async function getTrendingMoviesPreview() {
 }
 
 //get trending movies list
-function getLikedMovies() {
-  const likedMovies = localStorage.getItem("likedMovies") ?? undefined;
+async function getLikedMovies() {
+  const likedMovies = localStorage.getItem("likedMovies");
+  const parsedLikedMovies = JSON.parse(likedMovies);
+  
+  likedMoviesList.innerHTML = "";
 
-  // console.log(likedMovies)
-  // if (likedMovies && likedMovies?.length !== 0) {
-
-  //   likedMoviesList.innerHTML = "";
-
-  //   likedMovies.forEach((item) => {
-  //     appendMovieItem({
-  //       item,
-  //       container: moviesListContainer,
-  //       lazyLoading: true,
-  //     });
-  //   });
-  // }
+  if (likedMovies && parsedLikedMovies?.length !== 0) {
+    parsedLikedMovies.forEach((item) => {
+      appendMovieItem({
+        item,
+        container: likedMoviesList,
+        lazyLoading: true,
+      });
+    });
+  } else {
+    likedMoviesList.innerHTML = `<div class="liked-movies-header">
+    <h2 class="liked-movies-title">You haven't liked any movies yet</h2>
+  </div>`;
+  }
 }
 
 //function selector
@@ -205,9 +208,7 @@ function appendMovieItem({ item, container, lazyLoading = false }) {
 
   likeBtn.classList.add("like-button");
 
-  const likedMovies = localStorage.getItem("likedMovies");
-
-  if (likedMovies?.includes(id)) {
+  if (localStorage.getItem("likedMovies")?.includes(id)) {
     likeBtn.classList.add("like-button--liked");
   }
 
@@ -233,13 +234,12 @@ function appendMovieItem({ item, container, lazyLoading = false }) {
   likeBtn.addEventListener("click", () => {
     likeBtn.classList.toggle("like-button--liked");
 
-    if (!likedMovies) {
+    if (!localStorage.getItem("likedMovies")) {
       localStorage.setItem("likedMovies", JSON.stringify([item]));
     } else {
-      let parsedLikedMovies = JSON.parse(likedMovies);
-      let index = parsedLikedMovies.findIndex((movie) => movie.id === id);
+      let parsedLikedMovies = JSON.parse(localStorage.getItem("likedMovies"));
 
-      if (index === -1) {
+      if (!localStorage.getItem("likedMovies").includes(id)) {
         localStorage.setItem(
           "likedMovies",
           JSON.stringify([...parsedLikedMovies, item])
@@ -253,6 +253,9 @@ function appendMovieItem({ item, container, lazyLoading = false }) {
         );
       }
     }
+
+    getLikedMovies();
+    getTrendingMoviesPreview()
   });
 
   if (lazyLoading) {
